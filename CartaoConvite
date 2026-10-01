@@ -1,0 +1,406 @@
+import React, { useEffect, useState } from 'react';
+
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  StatusBar,
+  ScrollView,
+  TextInput,
+  Switch,
+  TouchableOpacity,
+  Modal,
+  Alert,
+} from 'react-native';
+
+import {
+  SafeAreaProvider,
+  SafeAreaView,
+} from 'react-native-safe-area-context';
+
+export default function App() {
+
+  const [bio, setBio] = useState('');
+  const [bioTemp, setBioTemp] = useState('');
+  const [modalVisivel, setModalVisivel] = useState(false);
+
+  const [notificacoes, setNotificacoes] = useState(false);
+  const [mensagem, setMensagem] = useState('');
+
+  const mensagens = [
+    'Nova mensagem recebida!',
+    'Não esqueça de atualizar seu perfil!',
+    'Bem-vindo ao seu cartão digital!',
+    'Tenha um ótimo dia!',
+    'Você recebeu uma nova notificação!'
+  ];
+
+  useEffect(() => {
+
+    let intervalo;
+
+    if (notificacoes) {
+
+      intervalo = setInterval(() => {
+
+        const numeroAleatorio =
+          Math.floor(Math.random() * mensagens.length);
+
+        setMensagem(mensagens[numeroAleatorio]);
+
+      }, 5000);
+
+    } else {
+
+      setMensagem('');
+
+    }
+
+    return () => clearInterval(intervalo);
+
+  }, [notificacoes]);
+
+
+  function abrirModal() {
+
+    setBioTemp(bio);
+    setModalVisivel(true);
+
+  }
+
+
+  function salvarBio() {
+
+    setBio(bioTemp);
+    setModalVisivel(false);
+
+    Alert.alert(
+      'Sucesso',
+      'Bio atualizada!'
+    );
+
+  }
+
+
+  function salvarDados() {
+
+    Alert.alert(
+      'Sucesso',
+      'Dados salvos com sucesso!'
+    );
+
+  }
+
+
+  return (
+
+    <SafeAreaProvider>
+
+      <SafeAreaView style={styles.container}>
+
+        <StatusBar barStyle="dark-content" />
+
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+        >
+
+          <Image
+            source={{
+              uri: 'https://img.magnific.com/vetores-premium/avatar-de-desenho-animado-de-jovem-negro-sorridente-com-cabelo-curto-isolado-em-fundo-pastel_128835-1304.jpg?semt=ais_hybrid&w=740&q=80'
+            }}
+            style={styles.avatar}
+          />
+
+          <Text style={styles.nome}>
+            Gabriel do Nascimento Quintiliano
+          </Text>
+
+
+          <View style={styles.card}>
+
+            <Text style={styles.titulo}>
+              Bio
+            </Text>
+
+            <Text style={styles.bio}>
+              {bio}
+            </Text>
+
+            <TouchableOpacity
+              style={styles.botaoEditar}
+              onPress={abrirModal}
+            >
+
+              <Text style={styles.textoBotao}>
+                Editar Bio
+              </Text>
+
+            </TouchableOpacity>
+
+          </View>
+
+
+          <View style={styles.card}>
+
+            <Text style={styles.titulo}>
+              Configurações
+            </Text>
+
+            <View style={styles.linha}>
+
+              <Text style={styles.textoConfiguracao}>
+                Receber Notificações
+              </Text>
+
+              <Switch
+                value={notificacoes}
+                onValueChange={setNotificacoes}
+              />
+
+            </View>
+
+          </View>
+
+
+          {mensagem !== '' && (
+
+            <View style={styles.notificacao}>
+
+              <Text style={styles.textoNotificacao}>
+                {mensagem}
+              </Text>
+
+            </View>
+
+          )}
+
+
+          <TouchableOpacity
+            style={styles.botaoSalvar}
+            onPress={salvarDados}
+          >
+
+            <Text style={styles.textoBotao}>
+              Salvar
+            </Text>
+
+          </TouchableOpacity>
+
+
+          <Modal
+            visible={modalVisivel}
+            transparent={true}
+            animationType="slide"
+          >
+
+            <View style={styles.fundoModal}>
+
+              <View style={styles.modal}>
+
+                <Text style={styles.tituloModal}>
+                  Editar Bio
+                </Text>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Digite sua bio"
+                  multiline={true}
+                  value={bioTemp}
+                  onChangeText={setBioTemp}
+                />
+
+
+                <View style={styles.botoesModal}>
+
+                  <TouchableOpacity
+                    style={styles.botaoCancelar}
+                    onPress={() =>
+                      setModalVisivel(false)
+                    }
+                  >
+
+                    <Text>
+                      Cancelar
+                    </Text>
+
+                  </TouchableOpacity>
+
+
+                  <TouchableOpacity
+                    style={styles.botaoModalSalvar}
+                    onPress={salvarBio}
+                  >
+
+                    <Text style={styles.textoBotao}>
+                      Salvar
+                    </Text>
+
+                  </TouchableOpacity>
+
+                </View>
+
+              </View>
+
+            </View>
+
+          </Modal>
+
+        </ScrollView>
+
+      </SafeAreaView>
+
+    </SafeAreaProvider>
+
+  );
+}
+
+
+const styles = StyleSheet.create({
+
+  container: {
+    flex: 1,
+    backgroundColor: 'lightgray',
+  },
+
+  scroll: {
+    padding: 20,
+    alignItems: 'center',
+  },
+
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginTop: 20,
+  },
+
+  nome: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 15,
+    marginBottom: 25,
+  },
+
+  card: {
+    width: '100%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 20,
+
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+
+    elevation: 5,
+  },
+
+  titulo: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+
+  bio: {
+    minHeight: 60,
+    fontSize: 16,
+    marginBottom: 15,
+  },
+
+  botaoEditar: {
+    backgroundColor: 'black',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+
+  linha: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  textoConfiguracao: {
+    fontSize: 16,
+  },
+
+  botaoSalvar: {
+    width: '100%',
+    backgroundColor: 'black',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+
+  textoBotao: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+  },
+
+  notificacao: {
+    width: '100%',
+    backgroundColor: 'darkgray',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+
+  textoNotificacao: {
+    color: '#white',
+    textAlign: 'center',
+  },
+
+  fundoModal: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+
+  modal: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 20,
+  },
+
+  tituloModal: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 8,
+    padding: 10,
+    minHeight: 100,
+    textAlignVertical: 'top',
+  },
+
+  botoesModal: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 20,
+  },
+
+  botaoCancelar: {
+    padding: 12,
+    marginRight: 10,
+  },
+
+  botaoModalSalvar: {
+    backgroundColor: 'black',
+    padding: 12,
+    borderRadius: 8,
+  },
+
+});
